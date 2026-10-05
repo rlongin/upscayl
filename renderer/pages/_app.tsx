@@ -11,7 +11,7 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
   return (
     <>
       <Head>
-        <title>Upscayl</title>
+        <title>ShutterUpskal · EF Ventures</title>
       </Head>
       <base href="./" />
 

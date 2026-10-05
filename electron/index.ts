@@ -22,6 +22,9 @@ import settings from "electron-settings";
 import pasteImage from "./commands/paste-image";
 import path from "path";
 
+app.setName("ShutterUpskal");
+app.setPath("userData", path.join(app.getPath("appData"), "EFV-ShutterUpskal"));
+
 // INITIALIZATION
 log.initialize({ preload: true });
 
