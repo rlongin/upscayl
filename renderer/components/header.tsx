@@ -25,6 +25,7 @@ export default function Header({ version }: { version: string }) {
             </span>
           </h1>
           <p className="">{t("HEADER.DESCRIPTION")}</p>
+          <small className="mt-1 text-[10px] leading-tight opacity-70">brought to you by EF Ventures Labs</small>
         </div>
       </div>
     </a>

@@ -38,6 +38,7 @@ function Footer() {
           {t("FOOTER.LINK_TITLE")}
         </a>
       </p>
+      <p className="mt-1 text-[10px] leading-tight">offered on Ventura OS</p>
     </div>
   );
 }

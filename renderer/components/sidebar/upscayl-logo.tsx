@@ -12,7 +12,7 @@ const UpscaylLogo = () => {
           <strong>ShutterUpskal</strong>
         </div>
         <button type="button" className="btn btn-ghost btn-xs" onClick={() => setHelp(true)}>Help</button>
-        <small className="col-start-1 text-[10px] leading-tight opacity-70">by EF Ventures Lab</small>
+        <small className="col-start-1 text-[10px] leading-tight opacity-70">brought to you by EF Ventures Labs</small>
       </div>
       <Dialog open={help} onOpenChange={setHelp}>
         <DialogContent className="max-h-[85vh] overflow-auto rounded-2xl bg-base-100 text-base-content">
