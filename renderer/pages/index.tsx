@@ -5,6 +5,8 @@ import { useAtomValue, useSetAtom } from "jotai";
 import { customModelIdsAtom } from "../atoms/models-list-atom";
 import {
   batchModeAtom,
+  selectedImageCountAtom,
+  doubleUpscaylAtom,
   savedOutputPathAtom,
   progressAtom,
   rememberOutputFolderAtom,
@@ -42,17 +44,34 @@ const Home = () => {
   const setOutputPath = useSetAtom(savedOutputPathAtom);
   const rememberOutputFolder = useAtomValue(rememberOutputFolderAtom);
   const batchMode = useAtomValue(batchModeAtom);
+  const setBatchMode = useSetAtom(batchModeAtom);
+  const setSelectedImageCount = useSetAtom(selectedImageCountAtom);
+  const setDoubleUpscayl = useSetAtom(doubleUpscaylAtom);
   const [batchFolderPath, setBatchFolderPath] = useState("");
   const [upscaledBatchFolderPath, setUpscaledBatchFolderPath] = useState("");
   const setProgress = useSetAtom(progressAtom);
+  const progress = useAtomValue(progressAtom);
+  const windowSelectionBusy = () => progress.length > 0;
   const [doubleUpscaylCounter, setDoubleUpscaylCounter] = useState(0);
   const setModelIds = useSetAtom(customModelIdsAtom);
   const setUserStats = useSetAtom(userStatsAtom);
 
   const selectImageHandler = async () => {
-    resetImagePaths();
-    const path = await window.electron.invoke(ELECTRON_COMMANDS.SELECT_FILE);
+    if (windowSelectionBusy()) return;
+    let path;
+    try { path = await window.electron.invoke(ELECTRON_COMMANDS.SELECT_FILE); }
+    catch (error) { toast({ title: "Could not select images", description: String(error) }); return; }
     if (path === null) return;
+    resetImagePaths();
+    if (typeof path === "object") {
+      setBatchMode(true);
+      setDoubleUpscayl(false);
+      setSelectedImageCount(path.count);
+      setBatchFolderPath(path.folderPath);
+      if (!rememberOutputFolder) setOutputPath(path.outputPath);
+      return;
+    }
+    setBatchMode(false);
     logit("🖼 Selected Image Path: ", path);
     setImagePath(path);
     const dirname = getDirectoryFromPath(path);
@@ -66,6 +85,7 @@ const Home = () => {
   };
 
   const selectFolderHandler = async () => {
+    if (windowSelectionBusy()) return;
     resetImagePaths();
     const path = await window.electron.invoke(ELECTRON_COMMANDS.SELECT_FOLDER);
     if (path !== null) {
@@ -322,6 +342,7 @@ const Home = () => {
     setImagePath("");
     setUpscaledImagePath("");
     setBatchFolderPath("");
+    setSelectedImageCount(0);
     setUpscaledBatchFolderPath("");
   };
 

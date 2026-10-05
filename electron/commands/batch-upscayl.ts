@@ -105,8 +105,12 @@ const batchUpscayl = async (event, payload: BatchUpscaylPayload) => {
       );
     return;
   };
-  const onClose = async () => {
+  const onClose = async (code: number | null) => {
     if (!mainWindow) return;
+    if (!failed && !stopped && code !== 0) {
+      onError(`Batch upscaling failed (exit code ${code}).`);
+      return;
+    }
     if (!failed && !stopped) {
       logit("💯 Done upscaling");
       upscayl.kill();
@@ -119,7 +123,7 @@ const batchUpscayl = async (event, payload: BatchUpscaylPayload) => {
             const originalFile = inputDir + slash + file;
             if (fs.existsSync(outFile) && fs.existsSync(originalFile)) {
                 try {
-                  await copyMetadata(inputDir, outFile);
+                  await copyMetadata(originalFile, outFile);
                   logit("✅ Metadata copied to: ", outFile);
                 } catch (error) {
                   logit("❌ Error copying metadata: ", error);

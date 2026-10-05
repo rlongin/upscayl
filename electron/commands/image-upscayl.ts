@@ -152,7 +152,11 @@ const imageUpscayl = async (event, payload: ImageUpscaylPayload) => {
       upscayl.kill();
       return;
     };
-    const onClose = async () => {
+    const onClose = async (code: number | null) => {
+      if (!failed && !stopped && (code !== 0 || !fs.existsSync(outFile) || fs.statSync(outFile).size === 0)) {
+        onError(`Upscaling did not create a valid output image (exit code ${code}).`);
+        return;
+      }
       if (!failed && !stopped) {
         logit("💯 Done upscaling");
         // Free up memory
