@@ -6,10 +6,13 @@ const UpscaylLogo = () => {
   const [help, setHelp] = useState(false);
   return (
     <>
-      <div className="fixed right-2 top-2 z-50 flex items-center gap-2 rounded-lg bg-base-300 px-3 py-2 text-base-content">
-        <UpscaylSVGLogo className="w-6" />
-        <strong>ShutterUpskal</strong>
+      <div className="fixed right-2 top-2 z-50 grid grid-cols-[auto_auto] items-center gap-x-3 gap-y-1 rounded-lg bg-base-300 px-3 py-2 text-base-content">
+        <div className="flex items-center gap-2">
+          <UpscaylSVGLogo className="w-6" />
+          <strong>ShutterUpskal</strong>
+        </div>
         <button type="button" className="btn btn-ghost btn-xs" onClick={() => setHelp(true)}>Help</button>
+        <small className="col-start-1 text-[10px] leading-tight opacity-70">by EF Ventures Lab</small>
       </div>
       <Dialog open={help} onOpenChange={setHelp}>
         <DialogContent className="max-h-[85vh] overflow-auto rounded-2xl bg-base-100 text-base-content">
