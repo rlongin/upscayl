@@ -80,6 +80,11 @@ export const translationAtom = atom((get) => {
     key: NestedKeyOf<Translations>,
     params: Record<string, string> = {},
   ): string => {
+    // ShutterUpskal is a thin branded distribution of stock Upscayl.
+    // Keep every translated string and behavior upstream-identical; only
+    // replace the product title.
+    if (key === "TITLE") return "ShutterUpskal";
+
     const template = getNestedTranslation(translations[locale], key);
 
     // Replace placeholders with parameters, e.g., {name} => John
