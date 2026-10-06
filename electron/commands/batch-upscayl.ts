@@ -17,6 +17,10 @@ import showNotification from "../utils/show-notification";
 import { MODELS } from "../../common/models-list";
 import { copyMetadata } from "../utils/copy-metadata";
 import { authenticUpscaleFolder } from "../utils/authentic-upscale";
+import {
+  createStagedOutputFolder,
+  finalizeStagedFolder,
+} from "../utils/staged-output";
 
 const batchUpscayl = async (event, payload: BatchUpscaylPayload) => {
   const mainWindow = getMainWindow();
@@ -39,10 +43,7 @@ const batchUpscayl = async (event, payload: BatchUpscaylPayload) => {
     useCustomWidth ? `${customWidth}px` : `${scale}x`
   }`;
   outputFolderPath += slash + outputFolderName;
-  // CREATE THE OUTPUT DIRECTORY
-  if (!fs.existsSync(outputFolderPath)) {
-    fs.mkdirSync(outputFolderPath, { recursive: true });
-  }
+  const stagedOutputFolder = createStagedOutputFolder();
 
   const isDefaultModel = model in MODELS;
 
@@ -50,7 +51,7 @@ const batchUpscayl = async (event, payload: BatchUpscaylPayload) => {
   const upscayl = spawnUpscayl(
     getBatchArguments({
       inputDir,
-      outputDir: outputFolderPath,
+      outputDir: stagedOutputFolder,
       modelsPath: isDefaultModel
         ? modelsPath
         : (savedCustomModelsPath ?? modelsPath),
@@ -71,6 +72,7 @@ const batchUpscayl = async (event, payload: BatchUpscaylPayload) => {
   setStopped(false);
   let failed = false;
   let encounteredError = false;
+  let nativeWriteFailed = false;
   let verifiedGpu = "";
 
   const onData = (data: any) => {
@@ -84,7 +86,11 @@ const batchUpscayl = async (event, payload: BatchUpscaylPayload) => {
       ELECTRON_COMMANDS.FOLDER_UPSCAYL_PROGRESS,
       data.toString(),
     );
-    if (
+    if ((data as string).includes("Couldn't write the image")) {
+      nativeWriteFailed = true;
+      encounteredError = true;
+      logit("⚠️ Native batch writer failed after inference; retrying safe save path.");
+    } else if (
       (data as string).includes("Error") ||
       (data as string).includes("failed")
     ) {
@@ -114,7 +120,7 @@ const batchUpscayl = async (event, payload: BatchUpscaylPayload) => {
   const onClose = async (code: number | null) => {
     if (!mainWindow) return;
 
-    if (!failed && !stopped && code !== 0) {
+    if (!failed && !stopped && (code !== 0 || nativeWriteFailed)) {
       try {
         logit(
           `⚠️ Batch AI backend exited with code ${code}; switching to Authentic HD compatibility mode.`,
@@ -126,7 +132,7 @@ const batchUpscayl = async (event, payload: BatchUpscaylPayload) => {
 
         const completed = await authenticUpscaleFolder({
           inputDir,
-          outputDir: outputFolderPath,
+          outputDir: stagedOutputFolder,
           scale,
           customWidth,
           useCustomWidth,
@@ -138,6 +144,11 @@ const batchUpscayl = async (event, payload: BatchUpscaylPayload) => {
             ),
         });
 
+        const finalized = finalizeStagedFolder(
+          stagedOutputFolder,
+          outputFolderPath,
+        );
+        outputFolderPath = finalized.outputFolder;
         upscayl.kill();
         mainWindow.setProgressBar(-1);
         mainWindow.webContents.send(
@@ -146,7 +157,9 @@ const batchUpscayl = async (event, payload: BatchUpscaylPayload) => {
         );
         showNotification(
           "ShutterUpskal",
-          `${completed} image${completed === 1 ? "" : "s"} completed in Authentic HD compatibility mode.`,
+          finalized.recovered
+            ? `${completed} image${completed === 1 ? "" : "s"} completed in Authentic HD mode. Saved safely to ${outputFolderPath}`
+            : `${completed} image${completed === 1 ? "" : "s"} completed in Authentic HD compatibility mode.`,
         );
         return;
       } catch (fallbackError) {
@@ -158,6 +171,11 @@ const batchUpscayl = async (event, payload: BatchUpscaylPayload) => {
     }
 
     if (!failed && !stopped) {
+      const finalized = finalizeStagedFolder(
+        stagedOutputFolder,
+        outputFolderPath,
+      );
+      outputFolderPath = finalized.outputFolder;
       const engineLabel = verifiedGpu
         ? `AI GPU — ${verifiedGpu}`
         : "AI GPU — Vulkan backend";
@@ -199,7 +217,9 @@ const batchUpscayl = async (event, payload: BatchUpscaylPayload) => {
       if (!encounteredError) {
         showNotification(
           "ShutterUpskal",
-          `Verified AI GPU batch complete${verifiedGpu ? ` — ${verifiedGpu}` : ""}.`,
+          finalized.recovered
+            ? `Verified AI GPU batch complete${verifiedGpu ? ` — ${verifiedGpu}` : ""}. Saved safely to ${outputFolderPath}`
+            : `Verified AI GPU batch complete${verifiedGpu ? ` — ${verifiedGpu}` : ""}.`,
         );
       } else {
         showNotification(
