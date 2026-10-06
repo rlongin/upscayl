@@ -1,4 +1,4 @@
-name: ShutterUpskal RTX 50 compatibility preview
+name: ShutterUpskal 2.15.1 test installer
 
 on:
   workflow_dispatch:
@@ -9,73 +9,11 @@ permissions:
   contents: read
 
 jobs:
-  windows-blackwell:
+  windows-test-installer:
     runs-on: windows-latest
     steps:
       - name: Check out ShutterUpskal
         uses: actions/checkout@v4
-
-      - name: Check out current Upscayl NCNN backend
-        uses: actions/checkout@v4
-        with:
-          repository: upscayl/upscayl-ncnn
-          ref: master
-          path: backend
-          submodules: recursive
-
-      - name: Update ncnn for RTX 50-series support
-        shell: pwsh
-        run: |
-          git -C backend/src/ncnn fetch origin master
-          git -C backend/src/ncnn checkout --detach origin/master
-          git -C backend/src/ncnn submodule update --init --recursive
-          git -C backend/src/ncnn log -1 --oneline
-
-      - name: Apply RTX 50 cooperative-vector initialization workaround
-        shell: pwsh
-        run: |
-          $path = "backend/src/ncnn/src/gpu.cpp"
-          $text = Get-Content $path -Raw
-          $needle = '            support_VK_NV_cooperative_vector = exp.specVersion;'
-          if (-not $text.Contains($needle)) {
-            throw "Current ncnn source does not contain VK_NV_cooperative_vector detection."
-          }
-          $replacement = @"
-                      support_VK_NV_cooperative_vector = exp.specVersion;
-
-              // ShutterUpskal RTX 50 / Blackwell compatibility.
-              // Skip optional NVIDIA cooperative-vector/matrix2 probing before
-              // ncnn queries their Vulkan feature/property entry points.
-              // Real-ESRGAN does not require these optional paths.
-              support_VK_NV_cooperative_vector = 0;
-              support_VK_NV_cooperative_matrix2 = 0;
-          "@
-          $text = $text.Replace($needle, $replacement)
-          Set-Content $path $text -NoNewline
-
-      - name: Install current Vulkan SDK
-        shell: pwsh
-        run: |
-          Invoke-WebRequest "https://sdk.lunarg.com/sdk/download/latest/windows/vulkan_sdk.exe?Human=true" -OutFile vk.exe
-          7z x -aoa vk.exe -oVulkanSDK | Out-Null
-          $sdk = (Resolve-Path "VulkanSDK").Path
-          "VULKAN_SDK=$sdk" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          Write-Host "VULKAN_SDK=$sdk"
-
-      - name: Build RTX 50-compatible backend
-        shell: pwsh
-        run: |
-          cmake -S backend/src -B backend/build -A x64
-          cmake --build backend/build --config Release --parallel 2
-          if (-not (Test-Path "backend/build/Release/upscayl-bin.exe")) {
-            throw "RTX 50-compatible upscayl-bin.exe was not produced."
-          }
-
-      - name: Replace bundled Windows backend
-        shell: pwsh
-        run: |
-          Copy-Item "backend/build/Release/upscayl-bin.exe" "resources/win/bin/upscayl-bin.exe" -Force
-          Get-Item "resources/win/bin/upscayl-bin.exe" | Format-List Name,Length,LastWriteTime
 
       - name: Set up Node
         uses: actions/setup-node@v4
@@ -83,19 +21,23 @@ jobs:
           node-version: 18.20.5
           cache: npm
 
-      - name: Install app dependencies
+      - name: Install dependencies
         run: npm ci
+
+      - name: TypeScript check
+        run: npm run tsc
 
       - name: Build ShutterUpskal Windows installer
         run: npm run dist:win -- --publish never
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: "false"
 
-      - name: Upload compatibility preview
+      - name: Upload test installer
         uses: actions/upload-artifact@v4
         with:
-          name: ShutterUpskal-2.15.1-RTX50-preview
+          name: ShutterUpskal-2.15.1-Windows-test
           path: |
             dist/*.exe
             dist/*.zip
           if-no-files-found: error
+          retention-days: 14
