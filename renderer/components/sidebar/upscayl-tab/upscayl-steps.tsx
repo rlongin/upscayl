@@ -5,6 +5,7 @@ import { themeChange } from "theme-change";
 import useLogger from "../../hooks/use-logger";
 import {
   savedOutputPathAtom,
+  selectedImageCountAtom,
   progressAtom,
   rememberOutputFolderAtom,
   scaleAtom,
@@ -48,6 +49,7 @@ function UpscaylSteps({
   dimensions,
 }: IProps) {
   const [scale, setScale] = useAtom(scaleAtom);
+  const selectedImageCount = useAtomValue(selectedImageCountAtom);
   const [outputPath, setOutputPath] = useAtom(savedOutputPathAtom);
   const [progress, setProgress] = useAtom(progressAtom);
   const rememberOutputFolder = useAtomValue(rememberOutputFolderAtom);
@@ -117,7 +119,8 @@ function UpscaylSteps({
         <input
           type="checkbox"
           className="toggle"
-          defaultChecked={batchMode}
+          checked={batchMode}
+          disabled={progress.length > 0}
           onClick={() => {
             if (!rememberOutputFolder) {
               setOutputPath("");
@@ -140,14 +143,17 @@ function UpscaylSteps({
         <p className="step-heading">{t("APP.FILE_SELECTION.TITLE")}</p>
         <button
           className="btn btn-primary"
+          disabled={progress.length > 0}
           onClick={!batchMode ? selectImageHandler : selectFolderHandler}
           data-tooltip-id="tooltip"
           data-tooltip-content={imagePath}
         >
           {batchMode
             ? t("APP.FILE_SELECTION.BATCH_MODE_TYPE")
-            : t("APP.FILE_SELECTION.SINGLE_MODE_TYPE")}
+            : "Select Images"}
         </button>
+        {batchMode && <button className="btn btn-primary ml-2" disabled={progress.length > 0} onClick={selectImageHandler}>Select Images</button>}
+        <p className="mt-2 text-xs opacity-70">{selectedImageCount > 0 ? `${selectedImageCount} images selected` : "Use Ctrl or Shift to select 10–20 photos together."}</p>
       </div>
 
       {/* STEP 2 */}

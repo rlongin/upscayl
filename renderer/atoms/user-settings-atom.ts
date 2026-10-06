@@ -22,6 +22,7 @@ export const saveImageAsAtom = atomWithStorage<ImageFormat>(
 export const scaleAtom = atomWithStorage<string>("scale", "4");
 
 export const batchModeAtom = atom<boolean>(false);
+export const selectedImageCountAtom = atom<number>(0);
 
 /**
  * The path to the last folder the user saved an image to.

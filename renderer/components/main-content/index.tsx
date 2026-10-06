@@ -5,6 +5,7 @@ import { ELECTRON_COMMANDS } from "@common/electron-commands";
 import { useAtom, useAtomValue } from "jotai";
 import {
   batchModeAtom,
+  selectedImageCountAtom,
   lensSizeAtom,
   savedOutputPathAtom,
   progressAtom,
@@ -66,6 +67,7 @@ const MainContent = ({
   const [outputPath, setOutputPath] = useAtom(savedOutputPathAtom);
   const progress = useAtomValue(progressAtom);
   const batchMode = useAtomValue(batchModeAtom);
+  const selectedImageCount = useAtomValue(selectedImageCountAtom);
 
   const viewType = useAtomValue(viewTypeAtom);
   const lensSize = useAtomValue(lensSizeAtom);
@@ -311,7 +313,7 @@ const MainContent = ({
             <span className="font-bold">
               {t("APP.PROGRESS.BATCH.SELECTED_FOLDER_TITLE")}
             </span>{" "}
-            {batchFolderPath}
+            {selectedImageCount > 0 ? `${selectedImageCount} selected images` : batchFolderPath}
           </p>
         )}
       {/* BATCH UPSCALE DONE INFO */}

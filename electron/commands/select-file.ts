@@ -5,12 +5,14 @@ import logit from "../utils/logit";
 import settings from "electron-settings";
 import { FEATURE_FLAGS } from "../../common/feature-flags";
 
+import { stageSelectedImages } from "../utils/selected-image-batch";
+
 const selectFile = async () => {
   const mainWindow = getMainWindow();
 
   const { canceled, filePaths, bookmarks } = await dialog.showOpenDialog({
-    properties: ["openFile"],
-    title: "Select Image",
+    properties: ["openFile", "multiSelections"],
+    title: "Select one or more images",
     defaultPath: savedImagePath,
     securityScopedBookmarks: true,
     message: "Select Image to Upscale",
@@ -79,7 +81,7 @@ const selectFile = async () => {
 
     logit("📄 Selected File Path: ", filePaths[0]);
     // CREATE input AND upscaled FOLDER
-    return filePaths[0];
+    return filePaths.length > 1 ? stageSelectedImages(filePaths) : filePaths[0];
   }
 };
 

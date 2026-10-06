@@ -5,7 +5,7 @@ const useUpscaylVersion = () => {
 
   useEffect(() => {
     const upscaylVersion = navigator?.userAgent?.match(
-      /Upscayl\/([\d\.]+\d+)/,
+      /(?:Upscayl|shutterupskal)\/([\d\.]+\d+)/,
     )?.[1];
     setVersion(upscaylVersion);
   }, []);

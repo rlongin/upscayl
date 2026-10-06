@@ -1,14 +1,14 @@
 {
-  "name": "upscayl",
+  "name": "shutterupskal",
   "private": true,
   "version": "2.15.0",
-  "productName": "Upscayl",
+  "productName": "ShutterUpskal",
   "author": {
     "name": "Nayam Amarshe",
     "email": "nayam.emikx@aleeas.com",
     "url": "https://github.com/NayamAmarshe"
   },
-  "homepage": "https://github.com/TGS963/upscayl",
+  "homepage": "https://github.com/rlongin/upscayl",
   "contributors": [
     {
       "name": "Nayam Amarshe",
@@ -23,7 +23,7 @@
   ],
   "email": "nayam.emikx@aleeas.com",
   "license": "AGPL-3.0",
-  "description": "Upscayl - Free and Open Source AI Image Upscaler",
+  "description": "ShutterUpskal \u2014 EF Ventures image upscaler, powered by Upscayl",
   "keywords": [
     "AI",
     "Upscaler",
@@ -71,8 +71,8 @@
     "validate-schema": "node scripts/validate-schema.js"
   },
   "build": {
-    "productName": "Upscayl",
-    "appId": "org.upscayl.Upscayl",
+    "productName": "ShutterUpskal",
+    "appId": "app.efventures.shutterupskal",
     "artifactName": "${name}-${version}-${os}.${ext}",
     "afterSign": "./notarize.js",
     "asar": true,
@@ -180,7 +180,7 @@
       "icon": "resources/icons/"
     },
     "win": {
-      "publisherName": "Upscayl Team",
+      "publisherName": "EF Ventures",
       "target": [
         "nsis",
         "zip"
@@ -195,11 +195,14 @@
     },
     "files": [
       "export",
-      "renderer/out"
+      "renderer/out",
+      "LICENSE",
+      "Real-ESRGAN_LICENSE.txt",
+      "SHUTTERUPSKAL.md"
     ],
     "publish": {
       "provider": "github",
-      "owner": "upscayl",
+      "owner": "rlongin",
       "repo": "upscayl"
     }
   },

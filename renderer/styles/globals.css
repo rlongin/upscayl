@@ -304,3 +304,6 @@
     -webkit-transform: perspective(120px) rotateX(-360deg) rotateY(-359.9deg);
   }
 }
+
+/* EF Ventures accent; user-selected base themes remain intact. */
+:root, [data-theme] { --p: 64.5% 0.17 40; --pc: 98% 0.005 40; }

@@ -103,10 +103,6 @@ function SettingsTab({
     }
   };
 
-  const upscaylVersion = navigator?.userAgent?.match(
-    /Upscayl\/([\d\.]+\d+)/,
-  )[1];
-
   function disableScrolling() {
     if (timeoutId !== null) {
       clearTimeout(timeoutId);

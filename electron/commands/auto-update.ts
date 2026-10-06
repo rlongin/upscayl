@@ -20,7 +20,7 @@ const autoUpdate = (event: UpdateDownloadedEvent) => {
     autoUpdater.quitAndInstall();
   } else if (dialogResponse === 2) {
     shell.openExternal(
-      "https://github.com/upscayl/upscayl/releases/tag/v" + event.version
+      "https://github.com/rlongin/upscayl/releases/tag/v" + event.version
     );
     dialog.showMessageBoxSync(dialogOpts);
   } else {

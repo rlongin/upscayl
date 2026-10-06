@@ -16,7 +16,7 @@ export default function Header({ version }: { version: string }) {
       data-tooltip-content={t("HEADER.GITHUB_BUTTON_TITLE")}
     >
       <div className="flex items-center gap-3 px-5 py-5">
-        <UpscaylSVGLogo className="inline-block h-14 w-14" />
+        <UpscaylSVGLogo className="inline-block h-[32px] w-[32px] shrink-0" />
         <div className="flex flex-col justify-center">
           <h1 className="text-3xl font-bold">
             {t("TITLE")}{" "}
@@ -25,6 +25,7 @@ export default function Header({ version }: { version: string }) {
             </span>
           </h1>
           <p className="">{t("HEADER.DESCRIPTION")}</p>
+          <small className="mt-1 text-[10px] leading-tight opacity-70">brought to you by EF Ventures Labs</small>
         </div>
       </div>
     </a>
