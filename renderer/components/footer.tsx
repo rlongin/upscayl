@@ -39,7 +39,7 @@ function Footer() {
         </a>
       </p>
       <p>brought to you by EF Ventures Labs</p>
-      <p>from Ventura OS</p>
+      <p>from Ventura OS Desktop on NexusRENN</p>
     </div>
   );
 }
