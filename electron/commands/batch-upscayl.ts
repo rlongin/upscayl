@@ -16,6 +16,7 @@ import { BatchUpscaylPayload } from "../../common/types/types";
 import showNotification from "../utils/show-notification";
 import { MODELS } from "../../common/models-list";
 import { copyMetadata } from "../utils/copy-metadata";
+import { authenticUpscaleFolder } from "../utils/authentic-upscale";
 
 const batchUpscayl = async (event, payload: BatchUpscaylPayload) => {
   const mainWindow = getMainWindow();
@@ -107,10 +108,50 @@ const batchUpscayl = async (event, payload: BatchUpscaylPayload) => {
   };
   const onClose = async (code: number | null) => {
     if (!mainWindow) return;
+
     if (!failed && !stopped && code !== 0) {
-      onError(`Batch upscaling failed (exit code ${code}).`);
-      return;
+      try {
+        logit(
+          `⚠️ Batch AI backend exited with code ${code}; switching to Authentic HD compatibility mode.`,
+        );
+        mainWindow.webContents.send(
+          ELECTRON_COMMANDS.FOLDER_UPSCAYL_PROGRESS,
+          "GPU AI backend unavailable. Completing batch with Authentic HD compatibility mode (no generative facial changes)...",
+        );
+
+        const completed = await authenticUpscaleFolder({
+          inputDir,
+          outputDir: outputFolderPath,
+          scale,
+          customWidth,
+          useCustomWidth,
+          saveImageAs,
+          onProgress: (message) =>
+            mainWindow.webContents.send(
+              ELECTRON_COMMANDS.FOLDER_UPSCAYL_PROGRESS,
+              message,
+            ),
+        });
+
+        upscayl.kill();
+        mainWindow.setProgressBar(-1);
+        mainWindow.webContents.send(
+          ELECTRON_COMMANDS.FOLDER_UPSCAYL_DONE,
+          outputFolderPath,
+        );
+        showNotification(
+          "ShutterUpskal",
+          `${completed} image${completed === 1 ? "" : "s"} completed in Authentic HD compatibility mode.`,
+        );
+        return;
+      } catch (fallbackError) {
+        onError(
+          `AI batch backend failed (exit code ${code}) and Authentic HD fallback failed: ${fallbackError}`,
+        );
+        return;
+      }
     }
+
     if (!failed && !stopped) {
       logit("💯 Done upscaling");
       upscayl.kill();
