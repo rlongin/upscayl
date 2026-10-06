@@ -23,37 +23,33 @@ jobs:
           path: backend
           submodules: recursive
 
+      - name: Update ncnn for RTX 50-series support
+        shell: pwsh
+        run: |
+          git -C backend/src/ncnn fetch origin master
+          git -C backend/src/ncnn checkout --detach origin/master
+          git -C backend/src/ncnn submodule update --init --recursive
+          git -C backend/src/ncnn log -1 --oneline
+
       - name: Apply RTX 50 cooperative-vector initialization workaround
         shell: pwsh
         run: |
           $path = "backend/src/ncnn/src/gpu.cpp"
           $text = Get-Content $path -Raw
-          $needle = @"
-                  else if (strcmp(exp.extensionName, "VK_NV_cooperative_vector") == 0)
-                      support_VK_NV_cooperative_vector = exp.specVersion;
-              }
-
-              const bool support_VK_VERSION_1_1
-          "@
+          $needle = '            support_VK_NV_cooperative_vector = exp.specVersion;'
+          if (-not $text.Contains($needle)) {
+            throw "Current ncnn source does not contain VK_NV_cooperative_vector detection."
+          }
           $replacement = @"
-                  else if (strcmp(exp.extensionName, "VK_NV_cooperative_vector") == 0)
                       support_VK_NV_cooperative_vector = exp.specVersion;
-              }
 
-              // ShutterUpskal Windows RTX 50-series workaround.
-              // Current NVIDIA Blackwell drivers can access-violate while ncnn
-              // probes these optional NV cooperative extension entry points
-              // during create_gpu_instance(). Real-ESRGAN does not require them.
-              // Keep Vulkan, FP16, subgroup ops, tensor storage and the rest of
-              // the GPU path enabled; skip only the unsafe optional probes.
+              // ShutterUpskal RTX 50 / Blackwell compatibility.
+              // Skip optional NVIDIA cooperative-vector/matrix2 probing before
+              // ncnn queries their Vulkan feature/property entry points.
+              // Real-ESRGAN does not require these optional paths.
               support_VK_NV_cooperative_vector = 0;
               support_VK_NV_cooperative_matrix2 = 0;
-
-              const bool support_VK_VERSION_1_1
           "@
-          if (-not $text.Contains($needle)) {
-            throw "Could not locate ncnn cooperative-vector extension detection block."
-          }
           $text = $text.Replace($needle, $replacement)
           Set-Content $path $text -NoNewline
 
