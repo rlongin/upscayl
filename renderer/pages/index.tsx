@@ -67,15 +67,19 @@ const Home = () => {
 
   const selectFolderHandler = async () => {
     resetImagePaths();
-    const path = await window.electron.invoke(ELECTRON_COMMANDS.SELECT_FOLDER);
-    if (path !== null) {
-      logit("🖼 Selected Folder Path: ", path);
-      setBatchFolderPath(path);
+    const selection = await window.electron.invoke(
+      ELECTRON_COMMANDS.SELECT_BATCH_FILES,
+    );
+    if (selection !== null) {
+      logit(
+        `🖼 Selected ${selection.selectedCount} image(s) for batch Upscayl`,
+      );
+      setBatchFolderPath(selection.batchFolderPath);
       if (!rememberOutputFolder) {
-        setOutputPath(path);
+        setOutputPath(selection.outputPath);
       }
     } else {
-      logit("🚫 Folder selection cancelled");
+      logit("🚫 Batch image selection cancelled");
       setBatchFolderPath("");
       if (!rememberOutputFolder) {
         setOutputPath("");
