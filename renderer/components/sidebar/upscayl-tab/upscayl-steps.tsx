@@ -144,9 +144,7 @@ function UpscaylSteps({
           data-tooltip-id="tooltip"
           data-tooltip-content={imagePath}
         >
-          {batchMode
-            ? t("APP.FILE_SELECTION.BATCH_MODE_TYPE")
-            : t("APP.FILE_SELECTION.SINGLE_MODE_TYPE")}
+          {batchMode ? "Select Images" : t("APP.FILE_SELECTION.SINGLE_MODE_TYPE")}
         </button>
       </div>
 
