@@ -71,6 +71,22 @@ jobs:
       - name: TypeScript check
         run: npm run tsc
 
+      - name: Create ShutterUpskal macOS icon
+        run: |
+          rm -rf build/ShutterUpskal.iconset
+          mkdir -p build/ShutterUpskal.iconset
+          sips -z 16 16 build/icon.png --out build/ShutterUpskal.iconset/icon_16x16.png
+          sips -z 32 32 build/icon.png --out build/ShutterUpskal.iconset/icon_16x16@2x.png
+          sips -z 32 32 build/icon.png --out build/ShutterUpskal.iconset/icon_32x32.png
+          sips -z 64 64 build/icon.png --out build/ShutterUpskal.iconset/icon_32x32@2x.png
+          sips -z 128 128 build/icon.png --out build/ShutterUpskal.iconset/icon_128x128.png
+          sips -z 256 256 build/icon.png --out build/ShutterUpskal.iconset/icon_128x128@2x.png
+          sips -z 256 256 build/icon.png --out build/ShutterUpskal.iconset/icon_256x256.png
+          sips -z 512 512 build/icon.png --out build/ShutterUpskal.iconset/icon_256x256@2x.png
+          sips -z 512 512 build/icon.png --out build/ShutterUpskal.iconset/icon_512x512.png
+          sips -z 1024 1024 build/icon.png --out build/ShutterUpskal.iconset/icon_512x512@2x.png
+          iconutil -c icns build/ShutterUpskal.iconset -o build/icon.icns
+
       - name: Disable signing only for this preview artifact
         run: |
           node -e "const fs=require('fs'); const p=require('./package.json'); delete p.build.afterSign; delete p.build.mac.provisioningProfile; p.build.mac.identity=null; fs.writeFileSync('package.json', JSON.stringify(p,null,2)+'\n');"
