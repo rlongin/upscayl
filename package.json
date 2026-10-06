@@ -2,7 +2,7 @@
   "name": "upscayl",
   "private": true,
   "version": "2.15.0",
-  "productName": "Upscayl",
+  "productName": "ShutterUpskal",
   "author": {
     "name": "Nayam Amarshe",
     "email": "nayam.emikx@aleeas.com",
@@ -71,9 +71,9 @@
     "validate-schema": "node scripts/validate-schema.js"
   },
   "build": {
-    "productName": "Upscayl",
-    "appId": "org.upscayl.Upscayl",
-    "artifactName": "${name}-${version}-${os}.${ext}",
+    "productName": "ShutterUpskal",
+    "appId": "com.efventures.shutterupskal",
+    "artifactName": "ShutterUpskal-${version}-${os}-${arch}.${ext}",
     "afterSign": "./notarize.js",
     "asar": true,
     "asarUnpack": [
@@ -199,7 +199,7 @@
     ],
     "publish": {
       "provider": "github",
-      "owner": "upscayl",
+      "owner": "rlongin",
       "repo": "upscayl"
     }
   },
