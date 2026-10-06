@@ -8,7 +8,7 @@ const UpscaylLogo = () => {
     <>
       <div className="fixed right-2 top-2 z-50 grid grid-cols-[auto_auto] items-center gap-x-3 gap-y-1 rounded-lg bg-base-300 px-3 py-2 text-base-content">
         <div className="flex items-center gap-2">
-          <UpscaylSVGLogo className="w-6" />
+          <UpscaylSVGLogo className="h-[20px] w-[20px] shrink-0" />
           <strong>ShutterUpskal</strong>
         </div>
         <button type="button" className="btn btn-ghost btn-xs" onClick={() => setHelp(true)}>Help</button>
