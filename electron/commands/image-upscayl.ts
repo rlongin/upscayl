@@ -22,6 +22,7 @@ import getDirectoryFromPath from "../../common/get-directory-from-path";
 import { MODELS } from "../../common/models-list";
 import { getPlatform } from "../utils/get-device-specs";
 import { copyMetadata } from "../utils/copy-metadata";
+import { authenticUpscaleImage } from "../utils/authentic-upscale";
 
 const imageUpscayl = async (event, payload: ImageUpscaylPayload) => {
   const mainWindow = getMainWindow();
@@ -153,10 +154,52 @@ const imageUpscayl = async (event, payload: ImageUpscaylPayload) => {
       return;
     };
     const onClose = async (code: number | null) => {
-      if (!failed && !stopped && (code !== 0 || !fs.existsSync(outFile) || fs.statSync(outFile).size === 0)) {
-        onError(`Upscaling did not create a valid output image (exit code ${code}).`);
-        return;
+      const outputMissing =
+        !fs.existsSync(outFile) || fs.statSync(outFile).size === 0;
+
+      if (!failed && !stopped && (code !== 0 || outputMissing)) {
+        // RTX 50-series Windows drivers can terminate the native ncnn/Vulkan
+        // process with 0xC0000005 before inference begins. Do not strand the
+        // user: complete the requested resize with deterministic pixel
+        // resampling. This does not synthesize faces or scene details.
+        try {
+          logit(
+            `⚠️ AI backend exited with code ${code}; switching to Authentic HD compatibility mode.`,
+          );
+          mainWindow.webContents.send(
+            ELECTRON_COMMANDS.UPSCAYL_PROGRESS,
+            "GPU AI backend unavailable. Completing with Authentic HD compatibility mode (no generative facial changes)...",
+          );
+          await authenticUpscaleImage({
+            inputPath: imagePath,
+            outputPath: outFile,
+            scale,
+            customWidth,
+            useCustomWidth,
+            saveImageAs,
+          });
+          mainWindow.setProgressBar(-1);
+          if (payload.copyMetadata) {
+            try {
+              await copyMetadata(imagePath, outFile);
+            } catch (error) {
+              logit("❌ Error copying metadata after Authentic HD fallback: ", error);
+            }
+          }
+          mainWindow.webContents.send(ELECTRON_COMMANDS.UPSCAYL_DONE, outFile);
+          showNotification(
+            "ShutterUpskal",
+            "Image completed in Authentic HD compatibility mode.",
+          );
+          return;
+        } catch (fallbackError) {
+          onError(
+            `AI backend failed (exit code ${code}) and Authentic HD fallback failed: ${fallbackError}`,
+          );
+          return;
+        }
       }
+
       if (!failed && !stopped) {
         logit("💯 Done upscaling");
         // Free up memory
