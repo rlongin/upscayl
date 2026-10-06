@@ -1,4 +1,6 @@
 import fs from "fs";
+import path from "path";
+import { app } from "electron";
 import { getMainWindow } from "../main-window";
 import {
   childProcesses,
@@ -148,6 +150,22 @@ const batchUpscayl = async (event, payload: BatchUpscaylPayload) => {
       }
     } else {
       upscayl.kill();
+    }
+
+    // Multi-image batch selection is staged in a temporary folder so the
+    // stock Upscayl folder backend can process only the files the user chose.
+    // Remove only ShutterUpskal-owned staging folders after processing.
+    const stagingRoot = path.join(
+      app.getPath("temp"),
+      "ShutterUpskal",
+      "batch-selection-",
+    );
+    if (inputDir.startsWith(stagingRoot)) {
+      try {
+        fs.rmSync(inputDir, { recursive: true, force: true });
+      } catch (error) {
+        logit("⚠️ Could not clean batch staging folder: ", error);
+      }
     }
   };
   upscayl.process.stderr.on("data", onData);
