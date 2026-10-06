@@ -25,7 +25,7 @@ function Footer() {
           href="https://github.com/upscayl/upscayl"
           target="_blank"
         >
-          {t("TITLE")}
+          Upscayl
         </a>
       </p>
       <p>
@@ -38,6 +38,8 @@ function Footer() {
           {t("FOOTER.LINK_TITLE")}
         </a>
       </p>
+      <p>brought to you by EF Ventures Labs</p>
+      <p>from Ventura OS</p>
     </div>
   );
 }
