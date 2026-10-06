@@ -23,6 +23,10 @@ import { MODELS } from "../../common/models-list";
 import { getPlatform } from "../utils/get-device-specs";
 import { copyMetadata } from "../utils/copy-metadata";
 import { authenticUpscaleImage } from "../utils/authentic-upscale";
+import {
+  createStagedOutputFile,
+  finalizeStagedFile,
+} from "../utils/staged-output";
 
 const imageUpscayl = async (event, payload: ImageUpscaylPayload) => {
   const mainWindow = getMainWindow();
@@ -60,6 +64,9 @@ const imageUpscayl = async (event, payload: ImageUpscaylPayload) => {
     saveImageAs;
 
   const isDefaultModel = model in MODELS;
+  // Let the native AI backend write to a short local path first. This avoids
+  // Windows WIC failures on long, synced, protected, or unusual destination paths.
+  const stagedOutFile = createStagedOutputFile(saveImageAs);
 
   // Check if filename is too long
   if (outFile.length >= 255) {
@@ -105,7 +112,7 @@ const imageUpscayl = async (event, payload: ImageUpscaylPayload) => {
       getSingleImageArguments({
         inputDir: decodeURIComponent(inputDir),
         fileNameWithExt: decodeURIComponent(fileNameWithExt),
-        outFile,
+        outFile: stagedOutFile,
         modelsPath: isDefaultModel
           ? modelsPath
           : (savedCustomModelsPath ?? modelsPath),
@@ -125,6 +132,7 @@ const imageUpscayl = async (event, payload: ImageUpscaylPayload) => {
 
     setStopped(false);
     let failed = false;
+    let nativeWriteFailed = false;
     let verifiedGpu = "";
 
     const onData = (data: string) => {
@@ -139,7 +147,12 @@ const imageUpscayl = async (event, payload: ImageUpscaylPayload) => {
         ELECTRON_COMMANDS.UPSCAYL_PROGRESS,
         data.toString(),
       );
-      if (data.includes("Error") || data.includes("failed")) {
+      if (data.includes("Couldn't write the image")) {
+        // The AI pass reached its final save stage. Do not classify this as a
+        // GPU failure; onClose will retry through the safe staged-output path.
+        nativeWriteFailed = true;
+        logit("⚠️ Native image writer failed after inference; retrying safe save path.");
+      } else if (data.includes("Error") || data.includes("failed")) {
         upscayl.kill();
         failed = true;
         onError(data);
@@ -160,9 +173,9 @@ const imageUpscayl = async (event, payload: ImageUpscaylPayload) => {
     };
     const onClose = async (code: number | null) => {
       const outputMissing =
-        !fs.existsSync(outFile) || fs.statSync(outFile).size === 0;
+        !fs.existsSync(stagedOutFile) || fs.statSync(stagedOutFile).size === 0;
 
-      if (!failed && !stopped && (code !== 0 || outputMissing)) {
+      if (!failed && !stopped && (code !== 0 || outputMissing || nativeWriteFailed)) {
         // RTX 50-series Windows drivers can terminate the native ncnn/Vulkan
         // process with 0xC0000005 before inference begins. Do not strand the
         // user: complete the requested resize with deterministic pixel
@@ -177,24 +190,30 @@ const imageUpscayl = async (event, payload: ImageUpscaylPayload) => {
           );
           await authenticUpscaleImage({
             inputPath: imagePath,
-            outputPath: outFile,
+            outputPath: stagedOutFile,
             scale,
             customWidth,
             useCustomWidth,
             saveImageAs,
           });
+          const finalized = finalizeStagedFile(stagedOutFile, outFile);
           mainWindow.setProgressBar(-1);
           if (payload.copyMetadata) {
             try {
-              await copyMetadata(imagePath, outFile);
+              await copyMetadata(imagePath, finalized.outputPath);
             } catch (error) {
               logit("❌ Error copying metadata after Authentic HD fallback: ", error);
             }
           }
-          mainWindow.webContents.send(ELECTRON_COMMANDS.UPSCAYL_DONE, outFile);
+          mainWindow.webContents.send(
+            ELECTRON_COMMANDS.UPSCAYL_DONE,
+            finalized.outputPath,
+          );
           showNotification(
             "ShutterUpskal",
-            "Image completed in Authentic HD compatibility mode.",
+            finalized.recovered
+              ? `Authentic HD completed. Saved safely to ${finalized.outputPath}`
+              : "Image completed in Authentic HD compatibility mode.",
           );
           return;
         } catch (fallbackError) {
@@ -206,6 +225,7 @@ const imageUpscayl = async (event, payload: ImageUpscaylPayload) => {
       }
 
       if (!failed && !stopped) {
+        const finalized = finalizeStagedFile(stagedOutFile, outFile);
         const engineLabel = verifiedGpu
           ? `AI GPU — ${verifiedGpu}`
           : "AI GPU — Vulkan backend";
@@ -221,8 +241,8 @@ const imageUpscayl = async (event, payload: ImageUpscaylPayload) => {
         if (payload.copyMetadata) {
           logit("🏷️ Copying metadata...");
           try {
-            await copyMetadata(imagePath, outFile);
-            logit("✅ Metadata copied to: ", outFile);
+            await copyMetadata(imagePath, finalized.outputPath);
+            logit("✅ Metadata copied to: ", finalized.outputPath);
           } catch (error) {
             logit("❌ Error copying metadata: ", error);
             mainWindow.webContents.send(
@@ -231,10 +251,15 @@ const imageUpscayl = async (event, payload: ImageUpscaylPayload) => {
             );
           }
         }
-        mainWindow.webContents.send(ELECTRON_COMMANDS.UPSCAYL_DONE, outFile);
+        mainWindow.webContents.send(
+          ELECTRON_COMMANDS.UPSCAYL_DONE,
+          finalized.outputPath,
+        );
         showNotification(
           "ShutterUpskal",
-          `Verified AI GPU upscale complete${verifiedGpu ? ` — ${verifiedGpu}` : ""}.`,
+          finalized.recovered
+            ? `Verified AI GPU upscale complete${verifiedGpu ? ` — ${verifiedGpu}` : ""}. Saved safely to ${finalized.outputPath}`
+            : `Verified AI GPU upscale complete${verifiedGpu ? ` — ${verifiedGpu}` : ""}.`,
         );
       }
     };
