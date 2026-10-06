@@ -16,3 +16,5 @@ Upstream project: https://github.com/upscayl/upscayl
 Upscayl and its backend are licensed under GNU AGPL v3. The original LICENSE,
 Real-ESRGAN license, authorship, contributors, and upstream links remain in this
 source distribution.
+
+ShutterUpskal additionally provides a multi-image batch picker. Selected files are staged temporarily and then processed by the unchanged upstream Upscayl folder-batch backend.
