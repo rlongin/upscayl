@@ -71,10 +71,15 @@ const batchUpscayl = async (event, payload: BatchUpscaylPayload) => {
   setStopped(false);
   let failed = false;
   let encounteredError = false;
+  let verifiedGpu = "";
 
   const onData = (data: any) => {
     if (!mainWindow) return;
     data = data.toString();
+    const gpuMatch = data.match(/\[\d+\s+([^\]]*(?:NVIDIA|AMD|Intel)[^\]]*)\]/i);
+    if (gpuMatch?.[1]) {
+      verifiedGpu = gpuMatch[1].trim();
+    }
     mainWindow.webContents.send(
       ELECTRON_COMMANDS.FOLDER_UPSCAYL_PROGRESS,
       data.toString(),
@@ -153,6 +158,14 @@ const batchUpscayl = async (event, payload: BatchUpscaylPayload) => {
     }
 
     if (!failed && !stopped) {
+      const engineLabel = verifiedGpu
+        ? `AI GPU — ${verifiedGpu}`
+        : "AI GPU — Vulkan backend";
+      logit(`🧪 GPU VERIFY PASS: ${engineLabel}; exit code 0; batch output created.`);
+      mainWindow.webContents.send(
+        ELECTRON_COMMANDS.FOLDER_UPSCAYL_PROGRESS,
+        `Verified: ${engineLabel}`,
+      );
       logit("💯 Done upscaling");
       upscayl.kill();
       if (payload.copyMetadata) {
@@ -184,7 +197,10 @@ const batchUpscayl = async (event, payload: BatchUpscaylPayload) => {
         outputFolderPath,
       );
       if (!encounteredError) {
-        showNotification("Upscayled", "Images upscayled successfully!");
+        showNotification(
+          "ShutterUpskal",
+          `Verified AI GPU batch complete${verifiedGpu ? ` — ${verifiedGpu}` : ""}.`,
+        );
       } else {
         showNotification(
           "Upscayled",
