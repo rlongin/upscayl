@@ -19,13 +19,13 @@ function Footer() {
         </button>
       )}
       <p>
-        {t("FOOTER.COPYRIGHT")} {new Date().getFullYear()} -{" "}
+        © {new Date().getFullYear()} ·{" "}
         <a
           className="font-bold"
           href="https://github.com/upscayl/upscayl"
           target="_blank"
         >
-          {t("TITLE")}
+          Upscayl engine
         </a>
       </p>
       <p>
@@ -38,7 +38,7 @@ function Footer() {
           {t("FOOTER.LINK_TITLE")}
         </a>
       </p>
-      <p className="mt-1 text-[10px] leading-tight">offered on Ventura OS</p>
+      <p className="mt-1 text-[10px] leading-tight">ShutterUpskal · EF Ventures Labs · Ventura OS</p>
     </div>
   );
 }

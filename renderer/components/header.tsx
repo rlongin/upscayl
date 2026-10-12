@@ -9,7 +9,7 @@ export default function Header({ version }: { version: string }) {
 
   return (
     <a
-      href="https://github.com/upscayl/upscayl"
+      href="https://efventures.app"
       target="_blank"
       className={`outline-none focus-visible:ring-2`}
       data-tooltip-id="tooltip"
@@ -19,13 +19,13 @@ export default function Header({ version }: { version: string }) {
         <UpscaylSVGLogo className="inline-block h-[32px] w-[32px] shrink-0" />
         <div className="flex flex-col justify-center">
           <h1 className="text-3xl font-bold">
-            {t("TITLE")}{" "}
+            ShutterUpskal{" "}
             <span className="text-xs">
               {version} {FEATURE_FLAGS.APP_STORE_BUILD && "Mac"}
             </span>
           </h1>
-          <p className="">{t("HEADER.DESCRIPTION")}</p>
-          <small className="mt-1 text-[10px] leading-tight opacity-70">brought to you by EF Ventures Labs</small>
+          <p className="">AI Image Enhancement Studio</p>
+          <small className="mt-1 text-[10px] leading-tight opacity-70">EF Ventures Labs · Ventura OS</small>
         </div>
       </div>
     </a>

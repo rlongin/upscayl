@@ -1,0 +1,171 @@
+/* EF Ventures glass theme: additive visual layer, no processing changes. */
+:root {
+  --efv-glass: rgba(24, 39, 63, .64);
+  --efv-glass-border: rgba(169, 209, 255, .28);
+  --efv-glow: rgba(82, 171, 255, .32);
+}
+.efv-glass-surface {
+  background: var(--efv-glass);
+  border: 1px solid var(--efv-glass-border);
+  border-radius: 18px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, .22), inset 0 1px rgba(255,255,255,.09);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+.efv-glass-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .65rem;
+  border: 1px solid rgba(189, 224, 255, .42);
+  border-radius: 13px;
+  background: linear-gradient(135deg, rgba(105, 169, 234, .29), rgba(80, 94, 164, .18));
+  color: #f4faff;
+  padding: .75rem 1.25rem;
+  box-shadow: inset 0 1px rgba(255,255,255,.16), 0 8px 22px rgba(0,0,0,.16);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: background-color .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+.efv-glass-button:hover {
+  border-color: rgba(201, 235, 255, .78);
+  box-shadow: 0 0 22px var(--efv-glow), inset 0 1px rgba(255,255,255,.22);
+}
+.efv-glass-button:focus-visible { outline: 2px solid #b5e6ff; outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { .efv-glass-button { transition: none; } }
+
+/* Desktop renderer: presentation only. Avoid filters on the image preview. */
+.efv-app-shell { background: radial-gradient(ellipse at 15% 0%, #23334e 0%, #111827 48%, #0a101c 100%); }
+.efv-app-shell button:not(:disabled), .efv-app-shell [role="button"]:not([aria-disabled="true"]) {
+  border-color: rgba(180, 213, 255, .23);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.10);
+  transition: border-color .16s ease, box-shadow .16s ease;
+}
+.efv-app-shell button:not(:disabled):hover, .efv-app-shell [role="button"]:not([aria-disabled="true"]):hover {
+  border-color: rgba(180, 224, 255, .60);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.18), 0 0 15px rgba(75,150,235,.17);
+}
+.efv-app-shell button:focus-visible { outline: 2px solid #b5e6ff; outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) {
+  .efv-app-shell button, .efv-app-shell [role="button"] { transition: none !important; }
+}
+
+/* Nexus-inspired glass controls: scoped to ShutterUpskal, renderer only. */
+.efv-app-shell {
+  --efv-nexus-cyan: #66d9ff;
+  --efv-nexus-blue: #478fff;
+  --efv-nexus-violet: #9b7bff;
+  --efv-nexus-ink: #070d1c;
+  color: #eff7ff;
+  background: radial-gradient(ellipse at 82% 4%, rgba(95,65,180,.28), transparent 40%),
+              radial-gradient(ellipse at 10% 65%, rgba(28,111,209,.23), transparent 47%),
+              linear-gradient(145deg, #070d1c, #101a34 58%, #090d20);
+}
+.efv-app-shell aside,
+.efv-app-shell nav,
+.efv-app-shell [class*="sidebar"],
+.efv-app-shell [class*="card"],
+.efv-app-shell [class*="panel"] {
+  border-color: rgba(149,190,255,.18);
+}
+.efv-app-shell button:not(:disabled),
+.efv-app-shell [role="button"]:not([aria-disabled="true"]) {
+  border: 1px solid rgba(156,208,255,.35);
+  border-radius: 14px;
+  background-image: linear-gradient(125deg, rgba(97,188,255,.19), rgba(120,98,237,.19));
+  background-color: rgba(16,29,60,.52);
+  color: #f1f8ff;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.19), 0 8px 26px rgba(2,7,22,.22);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+.efv-app-shell button:not(:disabled):hover,
+.efv-app-shell [role="button"]:not([aria-disabled="true"]):hover {
+  transform: translateY(-1px);
+  border-color: rgba(123,222,255,.82);
+  box-shadow: 0 0 20px rgba(71,143,255,.3), 0 0 32px rgba(155,123,255,.16), inset 0 1px rgba(255,255,255,.27);
+}
+.efv-app-shell button:focus-visible,
+.efv-app-shell [role="button"]:focus-visible {
+  outline: 2px solid var(--efv-nexus-cyan);
+  outline-offset: 3px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .efv-app-shell button, .efv-app-shell [role="button"] { transition: none !important; transform: none !important; }
+}
+
+/* Rebuilt workspace framing, without modifying Electron or upscaling handlers. */
+.efv-app-shell .efv-workspace-sidebar {
+  position: relative;
+  z-index: 2;
+  background: linear-gradient(165deg, rgba(19,37,72,.87), rgba(11,17,40,.91) 68%, rgba(29,20,62,.85)) !important;
+  border-right: 1px solid rgba(135,199,255,.27);
+  box-shadow: 12px 0 48px rgba(1,7,24,.35), inset -1px 0 rgba(255,255,255,.05);
+  backdrop-filter: blur(24px) saturate(150%);
+}
+.efv-app-shell .efv-workspace-canvas {
+  margin: 14px 14px 14px 4px;
+  width: calc(100% - 18px);
+  height: calc(100vh - 28px);
+  border: 1px solid rgba(150,203,255,.21);
+  border-radius: 24px;
+  background: radial-gradient(circle at 50% 0%, rgba(65,132,225,.13), transparent 48%), rgba(8,17,38,.48);
+  box-shadow: inset 0 1px rgba(255,255,255,.09), 0 18px 60px rgba(0,0,0,.24);
+  overflow: hidden;
+  backdrop-filter: blur(12px);
+}
+.efv-app-shell .efv-workspace-sidebar input,
+.efv-app-shell .efv-workspace-sidebar select,
+.efv-app-shell .efv-workspace-sidebar textarea {
+  border-radius: 12px;
+  border-color: rgba(150,203,255,.28);
+  background-color: rgba(5,13,32,.54);
+  color: #f1f8ff;
+}
+.efv-app-shell .efv-workspace-sidebar input:focus-visible,
+.efv-app-shell .efv-workspace-sidebar select:focus-visible {
+  outline: 2px solid var(--efv-nexus-cyan);
+  outline-offset: 2px;
+}
+@media (max-width: 800px) {
+  .efv-app-shell .efv-workspace-canvas { margin: 8px; width: calc(100% - 16px); height: calc(100vh - 16px); border-radius: 16px; }
+}
+
+/* EFV identity chip: always readable over image workspace. */
+.efv-app-shell .efv-brand-chip {
+  border: 1px solid rgba(129,204,255,.34);
+  border-radius: 18px;
+  background: linear-gradient(120deg,rgba(21,43,85,.82),rgba(39,25,86,.79));
+  box-shadow: 0 12px 38px rgba(0,0,0,.26), inset 0 1px rgba(255,255,255,.17);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+.efv-app-shell .efv-workspace-canvas .badge {
+  border: 1px solid rgba(115,214,255,.44);
+  background: linear-gradient(120deg,rgba(48,128,223,.4),rgba(111,78,207,.42));
+  color: #f2f9ff;
+  box-shadow: 0 0 20px rgba(64,143,240,.17);
+}
+
+/* ShutterUpskal creative studio: first-run workspace */
+.efv-app-shell .efv-welcome-card {
+  border: 1px solid rgba(128,193,255,.25);
+  border-radius: 28px;
+  background: linear-gradient(145deg,rgba(25,45,88,.78),rgba(18,22,57,.75));
+  box-shadow: 0 28px 80px rgba(0,0,0,.3), inset 0 1px rgba(255,255,255,.12);
+  backdrop-filter: blur(24px);
+}
+.efv-app-shell .efv-welcome-symbol {
+  display: grid; place-items: center; width: 66px; height: 66px;
+  color: #91e5ff; border-radius: 20px;
+  background: linear-gradient(140deg,rgba(45,153,234,.32),rgba(142,80,235,.3));
+  border: 1px solid rgba(132,217,255,.48);
+  box-shadow: 0 0 36px rgba(67,141,255,.2);
+}
+.efv-app-shell .efv-welcome-dropzone {
+  border: 1px dashed rgba(133,207,255,.54);
+  background: radial-gradient(circle at top,rgba(63,127,215,.15),transparent 70%),rgba(6,17,41,.48);
+  transition: border-color .2s ease,background-color .2s ease;
+}
+.efv-app-shell .efv-welcome-dropzone:hover { border-color: #a6e9ff; background-color: rgba(20,46,87,.52); }

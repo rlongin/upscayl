@@ -1,4 +1,5 @@
 import "../styles/globals.css";
+import "../styles/efv-glass.css";
 import Head from "next/head";
 import { AppProps } from "next/app";
 import { Provider } from "jotai";

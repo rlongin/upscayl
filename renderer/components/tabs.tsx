@@ -18,7 +18,7 @@ const Tabs = ({ selectedTab, setSelectedTab }: TabsProps) => {
           setSelectedTab(0);
         }}
       >
-        {t("TITLE")}
+        Studio
       </a>
       <a
         className={`tab ${selectedTab === 1 && "tab-active"}`}
