@@ -2,6 +2,10 @@ name: ShutterUpskal Windows installer check
 on:
   pull_request:
     branches: [efv-shutterupskal]
+    paths:
+      - 'renderer/**'
+      - 'package.json'
+      - '.github/workflows/efv-windows-installer-check.yml'
   workflow_dispatch:
     inputs:
       signed_release:
