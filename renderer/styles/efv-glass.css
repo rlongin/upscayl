@@ -33,3 +33,19 @@
 }
 .efv-glass-button:focus-visible { outline: 2px solid #b5e6ff; outline-offset: 3px; }
 @media (prefers-reduced-motion: reduce) { .efv-glass-button { transition: none; } }
+
+/* Desktop renderer: presentation only. Avoid filters on the image preview. */
+.efv-app-shell { background: radial-gradient(ellipse at 15% 0%, #23334e 0%, #111827 48%, #0a101c 100%); }
+.efv-app-shell button:not(:disabled), .efv-app-shell [role="button"]:not([aria-disabled="true"]) {
+  border-color: rgba(180, 213, 255, .23);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.10);
+  transition: border-color .16s ease, box-shadow .16s ease;
+}
+.efv-app-shell button:not(:disabled):hover, .efv-app-shell [role="button"]:not([aria-disabled="true"]):hover {
+  border-color: rgba(180, 224, 255, .60);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.18), 0 0 15px rgba(75,150,235,.17);
+}
+.efv-app-shell button:focus-visible { outline: 2px solid #b5e6ff; outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) {
+  .efv-app-shell button, .efv-app-shell [role="button"] { transition: none !important; }
+}
