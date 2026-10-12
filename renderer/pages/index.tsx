@@ -354,7 +354,7 @@ const Home = () => {
 
   return (
     <div
-      className="flex h-screen w-screen flex-row overflow-hidden bg-base-300"
+      className="efv-app-shell flex h-screen w-screen flex-row overflow-hidden bg-base-300"
       onPaste={(e) => console.log(e)}
     >
       <Sidebar
