@@ -94,3 +94,40 @@
 @media (prefers-reduced-motion: reduce) {
   .efv-app-shell button, .efv-app-shell [role="button"] { transition: none !important; transform: none !important; }
 }
+
+/* Rebuilt workspace framing, without modifying Electron or upscaling handlers. */
+.efv-app-shell .efv-workspace-sidebar {
+  position: relative;
+  z-index: 2;
+  background: linear-gradient(165deg, rgba(19,37,72,.87), rgba(11,17,40,.91) 68%, rgba(29,20,62,.85)) !important;
+  border-right: 1px solid rgba(135,199,255,.27);
+  box-shadow: 12px 0 48px rgba(1,7,24,.35), inset -1px 0 rgba(255,255,255,.05);
+  backdrop-filter: blur(24px) saturate(150%);
+}
+.efv-app-shell .efv-workspace-canvas {
+  margin: 14px 14px 14px 4px;
+  width: calc(100% - 18px);
+  height: calc(100vh - 28px);
+  border: 1px solid rgba(150,203,255,.21);
+  border-radius: 24px;
+  background: radial-gradient(circle at 50% 0%, rgba(65,132,225,.13), transparent 48%), rgba(8,17,38,.48);
+  box-shadow: inset 0 1px rgba(255,255,255,.09), 0 18px 60px rgba(0,0,0,.24);
+  overflow: hidden;
+  backdrop-filter: blur(12px);
+}
+.efv-app-shell .efv-workspace-sidebar input,
+.efv-app-shell .efv-workspace-sidebar select,
+.efv-app-shell .efv-workspace-sidebar textarea {
+  border-radius: 12px;
+  border-color: rgba(150,203,255,.28);
+  background-color: rgba(5,13,32,.54);
+  color: #f1f8ff;
+}
+.efv-app-shell .efv-workspace-sidebar input:focus-visible,
+.efv-app-shell .efv-workspace-sidebar select:focus-visible {
+  outline: 2px solid var(--efv-nexus-cyan);
+  outline-offset: 2px;
+}
+@media (max-width: 800px) {
+  .efv-app-shell .efv-workspace-canvas { margin: 8px; width: calc(100% - 16px); height: calc(100vh - 16px); border-radius: 16px; }
+}
