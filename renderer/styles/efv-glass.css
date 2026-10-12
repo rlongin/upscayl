@@ -147,3 +147,25 @@
   color: #f2f9ff;
   box-shadow: 0 0 20px rgba(64,143,240,.17);
 }
+
+/* ShutterUpskal creative studio: first-run workspace */
+.efv-app-shell .efv-welcome-card {
+  border: 1px solid rgba(128,193,255,.25);
+  border-radius: 28px;
+  background: linear-gradient(145deg,rgba(25,45,88,.78),rgba(18,22,57,.75));
+  box-shadow: 0 28px 80px rgba(0,0,0,.3), inset 0 1px rgba(255,255,255,.12);
+  backdrop-filter: blur(24px);
+}
+.efv-app-shell .efv-welcome-symbol {
+  display: grid; place-items: center; width: 66px; height: 66px;
+  color: #91e5ff; border-radius: 20px;
+  background: linear-gradient(140deg,rgba(45,153,234,.32),rgba(142,80,235,.3));
+  border: 1px solid rgba(132,217,255,.48);
+  box-shadow: 0 0 36px rgba(67,141,255,.2);
+}
+.efv-app-shell .efv-welcome-dropzone {
+  border: 1px dashed rgba(133,207,255,.54);
+  background: radial-gradient(circle at top,rgba(63,127,215,.15),transparent 70%),rgba(6,17,41,.48);
+  transition: border-color .2s ease,background-color .2s ease;
+}
+.efv-app-shell .efv-welcome-dropzone:hover { border-color: #a6e9ff; background-color: rgba(20,46,87,.52); }
