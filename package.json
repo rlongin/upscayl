@@ -4,9 +4,8 @@
   "version": "2.15.0",
   "productName": "ShutterUpskal",
   "author": {
-    "name": "Nayam Amarshe",
-    "email": "nayam.emikx@aleeas.com",
-    "url": "https://github.com/NayamAmarshe"
+    "name": "EF Ventures",
+    "url": "https://efventures.app"
   },
   "homepage": "https://github.com/rlongin/upscayl",
   "contributors": [
@@ -21,9 +20,9 @@
       "url": "https://github.com/TGS963"
     }
   ],
-  "email": "nayam.emikx@aleeas.com",
+  "email": "",
   "license": "AGPL-3.0",
-  "description": "ShutterUpskal \u2014 EF Ventures image upscaler, powered by Upscayl",
+  "description": "ShutterUpskal — EF Ventures image upscaler, powered by Upscayl",
   "keywords": [
     "AI",
     "Upscaler",
@@ -173,7 +172,7 @@
         "deb",
         "rpm"
       ],
-      "maintainer": "Nayam Amarshe <simplelogin-newsletter.j1zez@aleeas.com>",
+      "maintainer": "EF Ventures",
       "category": "Graphics;2DGraphics;RasterGraphics;ImageProcessing;",
       "synopsis": "AI Image Upscaler",
       "description": "Free and Open Source AI Image Upscaler",
