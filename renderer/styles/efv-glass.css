@@ -131,3 +131,19 @@
 @media (max-width: 800px) {
   .efv-app-shell .efv-workspace-canvas { margin: 8px; width: calc(100% - 16px); height: calc(100vh - 16px); border-radius: 16px; }
 }
+
+/* EFV identity chip: always readable over image workspace. */
+.efv-app-shell .efv-brand-chip {
+  border: 1px solid rgba(129,204,255,.34);
+  border-radius: 18px;
+  background: linear-gradient(120deg,rgba(21,43,85,.82),rgba(39,25,86,.79));
+  box-shadow: 0 12px 38px rgba(0,0,0,.26), inset 0 1px rgba(255,255,255,.17);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+.efv-app-shell .efv-workspace-canvas .badge {
+  border: 1px solid rgba(115,214,255,.44);
+  background: linear-gradient(120deg,rgba(48,128,223,.4),rgba(111,78,207,.42));
+  color: #f2f9ff;
+  box-shadow: 0 0 20px rgba(64,143,240,.17);
+}
